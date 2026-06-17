@@ -1,0 +1,39 @@
+{
+  "name": "restaurant-pos-system",
+  "version": "2.0.0",
+  "description": "نظام مطعم متكامل",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7",
+    "bcrypt": "^5.1.1",
+    "node-thermal-printer": "^4.4.0",
+    "pdfmake": "^0.2.7"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.al-akwa.pos",
+    "productName": "مطعم كيان الشواية البخاري",
+    "win": {
+      "target": "nsis",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "نظام المطعم"
+    },
+    "files": [
+      "**/*",
+      "!dist"
+    ]
+  }
+}

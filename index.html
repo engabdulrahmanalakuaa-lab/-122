@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="app-title">مطعم كيان الشواية البخاري</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { display: flex; height: 100vh; overflow: hidden; background: #f4f6f9; }
+        .sidebar { width: 240px; background: #2c3e50; color: #ecf0f1; display: flex; flex-direction: column; padding: 15px 0; }
+        .sidebar .logo { padding: 0 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .sidebar .logo i { font-size: 28px; color: #e67e22; }
+        .sidebar .logo h2 { font-size: 16px; font-weight: 800; }
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 0 10px; overflow-y: auto; }
+        .nav-btn { display: flex; align-items: center; gap: 10px; padding: 12px 15px; background: transparent; border: none; color: #ecf0f1; font-size: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: right; width: 100%; }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); }
+        .nav-btn.active { background: #e67e22; color: #fff; font-weight: 700; }
+        .user-info { display: flex; align-items: center; gap: 10px; padding: 15px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; }
+        .user-info i { font-size: 30px; color: #e67e22; }
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; background: #f4f6f9; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .page-header h1 { font-size: 24px; color: #2c3e50; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 12px; }
+        .stat-icon { font-size: 28px; color: #e67e22; }
+        .stat-info h3 { font-size: 13px; color: #7f8c8d; margin-bottom: 4px; }
+        .stat-info p { font-size: 20px; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f8f9fa; font-weight: 700; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: #e67e22; color: #fff; }
+        .btn-danger { background: #e74c3c; color: #fff; }
+        .btn-success { background: #27ae60; color: #fff; }
+        .btn-secondary { background: #95a5a6; color: #fff; }
+        .btn-warning { background: #f39c12; color: #fff; }
+        .btn-sm { padding: 4px 10px; font-size: 13px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 10px; padding: 25px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 2px solid #bdc3c7; border-radius: 6px; font-size: 14px; }
+        .pos-container { display: flex; gap: 20px; height: calc(100vh - 150px); }
+        .menu-section { flex: 1; background: white; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-bottom: 10px; }
+        .cat-btn { padding: 12px; border: 2px solid #e67e22; border-radius: 8px; background: white; cursor: pointer; font-weight: 700; }
+        .cat-btn.active { background: #e67e22; color: white; }
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; overflow-y: auto; flex: 1; }
+        .item-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .item-card:hover { border-color: #e67e22; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .invoice-section { width: 400px; background: white; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
+        .cart-items { flex: 1; overflow-y: auto; max-height: 300px; }
+        .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; align-items: center; }
+        .cart-total { font-size: 20px; font-weight: 800; padding: 10px 0; border-top: 2px solid #e67e22; }
+        .payment-options { display: flex; gap: 10px; margin: 10px 0; }
+        .payment-options button { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-weight: 700; }
+        .payment-options button.active { border-color: #e67e22; background: #fdf2e9; }
+        .badge { background: #e67e22; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+        
+        /* لوحة المفاتيح الافتراضية للشاشات اللمسية */
+        .virtual-keyboard {
+            position: fixed; bottom: -400px; left: 0; right: 0;
+            background: #2c3e50; padding: 15px; box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+            transition: bottom 0.3s ease; z-index: 9999; direction: ltr;
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px;
+        }
+        .virtual-keyboard.active { bottom: 0; }
+        .key-btn { background: #ecf0f1; border: none; padding: 15px 10px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; text-align: center; }
+        .key-btn:active { background: #bdc3c7; }
+        .key-wide { grid-column: span 2; background: #e67e22; color: white; }
+        .key-space { grid-column: span 4; background: #34495e; color: white; }
+    </style>
+</head>
+<body>
+
+        <div id="login-screen" style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(44,62,80,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
+        <div style="background:white; padding:30px; border-radius:10px; text-align:center; min-width:320px;">
+            <h2 style="margin-bottom:20px; color:#2c3e50;">تسجيل الدخول</h2>
+            <div class="form-group"><input type="text" id="login-username" placeholder="اسم المستخدم"></div>
+            <div class="form-group"><input type="password" id="login-password" placeholder="كلمة المرور"></div>
+            <button class="btn btn-primary" onclick="submitLogin()" style="width:100%;">دخول</button>
+            <div style="margin-top:15px; font-size:13px; color:#7f8c8d; line-height:1.6;">
+                <strong>تصميم المهندس: عبدالرحمن الأكوع</strong><br>
+                <span style="direction: ltr; display: inline-block;">📞 +967 773579486</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-main" style="display:none; width:100%;">
+        <aside class="sidebar">
+            <div class="logo"><i class="fas fa-utensils"></i><h2 id="app-restaurant-name">جاري التحميل...</h2></div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</button>
+                <button class="nav-btn" data-tab="pos"><i class="fas fa-cash-register"></i> نقطة البيع</button>
+                <button class="nav-btn" data-tab="products"><i class="fas fa-boxes"></i> المنتجات</button>
+                <button class="nav-btn" data-tab="categories"><i class="fas fa-tags"></i> الأقسام</button>
+                <button class="nav-btn" data-tab="materials"><i class="fas fa-cubes"></i> المواد الخام</button>
+                <button class="nav-btn" data-tab="tables"><i class="fas fa-chair"></i> الطاولات</button>
+                <button class="nav-btn" data-tab="waiters"><i class="fas fa-user-tie"></i> الكباتن</button>
+                <button class="nav-btn" data-tab="reports"><i class="fas fa-chart-line"></i> التقارير</button>
+                <button class="nav-btn" data-tab="expenses"><i class="fas fa-money-bill-wave"></i> المصروفات</button>
+                <button class="nav-btn" data-tab="audit"><i class="fas fa-history"></i> سجل التدقيق</button>
+                <button class="nav-btn" data-tab="users"><i class="fas fa-users-cog"></i> المستخدمين</button>
+                <button class="nav-btn" data-tab="settings"><i class="fas fa-cog"></i> الإعدادات</button>
+            </nav>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <div style="display:flex; flex-direction:column; align-items:flex-start;">
+                    <span id="current-user-display">مدير النظام</span>
+                    <span id="user-role-badge" class="badge">admin</span>
+                </div>
+            </div>
+        </aside>
+        <main class="main-content" id="main-content"></main>
+    </div>
+
+    <div id="modal" class="modal"><div class="modal-content" id="modal-content"></div></div>
+
+    <div id="company-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; text-align:center;">إعداد بيانات المطعم</h3>
+            <div class="form-group"><label>اسم المطعم (يظهر في الترويسة)</label><input type="text" id="company-name" placeholder="اسم المطعم"></div>
+            <div class="form-group"><label>رقم الهاتف</label><input type="text" id="company-phone" placeholder="رقم الهاتف"></div>
+            <div class="form-group"><label>العنوان</label><input type="text" id="company-address" placeholder="العنوان"></div>
+            <div class="form-group"><label>الرقم الضريبي</label><input type="text" id="company-tax" placeholder="الرقم الضريبي"></div>
+            <div class="form-group"><label>نسبة الضريبة (%)</label><input type="number" id="company-tax-rate" placeholder="مثال: 15" step="0.01" min="0"></div>
+            <button class="btn btn-primary" onclick="saveCompanyFromModal()" style="width:100%;">حفظ</button>
+        </div>
+    </div>
+
+    <div id="keyboard" class="virtual-keyboard">
+        <button class="key-btn" onclick="pressKey('1')">1</button>
+        <button class="key-btn" onclick="pressKey('2')">2</button>
+        <button class="key-btn" onclick="pressKey('3')">3</button>
+        <button class="key-btn" onclick="pressKey('4')">4</button>
+        <button class="key-btn" onclick="pressKey('5')">5</button>
+        <button class="key-btn" onclick="pressKey('6')">6</button>
+        <button class="key-btn" onclick="pressKey('7')">7</button>
+        <button class="key-btn" onclick="pressKey('8')">8</button>
+        <button class="key-btn" onclick="pressKey('9')">9</button>
+        <button class="key-btn" onclick="pressKey('0')">0</button>
+        
+        <button class="key-btn key-wide" onclick="pressKey('Backspace')">مسح ⌫</button>
+        <button class="key-btn key-space" onclick="pressKey(' ')">مسافة ␣</button>
+        <button class="key-btn key-wide" onclick="pressKey('Clear')">تفريغ</button>
+        <button class="key-btn key-wide" onclick="hideKeyboard()" style="background: #2ecc71;">إغلاق ↩</button>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
